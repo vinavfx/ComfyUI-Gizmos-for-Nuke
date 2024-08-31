@@ -1,0 +1,153 @@
+set cut_paste_input [stack 0]
+version 12.0 v8
+push $cut_paste_input
+Group {
+ name SAM
+ onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
+ tile_color 0xa2b275ff
+ selected true
+ xpos 441
+ ypos -276
+ addUserKnob {20 controls l Controls}
+ addUserKnob {26 comfyui_gizmo l ComfyUIGizmo +INVISIBLE T "This knob only allows the read and backup to be outside the gizmo !"}
+ addUserKnob {41 prompt_ l prompt T GroundingDinoSAMSegmentsegmentanything.prompt_}
+ addUserKnob {41 threshold_ l threshold T GroundingDinoSAMSegmentsegmentanything.threshold_}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {41 comfyui_submit l submit T QueuePrompt.comfyui_submit}
+ addUserKnob {41 backup_result -STARTLINE T QueuePrompt.backup_result}
+}
+ Input {
+  inputs 0
+  name Input
+  xpos 0
+  ypos 42
+ }
+ Group {
+  inputs 0
+  name GroundingDinoModelLoadersegmentanything
+  xpos 252
+  ypos 157
+  addUserKnob {20 Controls}
+  addUserKnob {4 model_name_ l model_name M {"GroundingDINO_SwinT_OGC (694MB)" "GroundingDINO_SwinB (938MB)"}}
+  model_name_ "GroundingDINO_SwinB (938MB)"
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'model_name_'\n    ], \n    'inputs': \[], \n    'class_type': 'GroundingDinoModelLoader (segment anything)', \n    'outputs': \[\n        'grounding_dino_model'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 0
+  name SAMModelLoadersegmentanything
+  xpos -246
+  ypos 157
+  addUserKnob {20 Controls}
+  addUserKnob {4 model_name_ l model_name M {"sam_vit_h (2.56GB)" "sam_vit_l (1.25GB)" "sam_vit_b (375MB)" "sam_hq_vit_h (2.57GB)" "sam_hq_vit_l (1.25GB)" "sam_hq_vit_b (379MB)" mobile_sam(39MB)}}
+  model_name_ "sam_hq_vit_h (2.57GB)"
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'model_name_'\n    ], \n    'inputs': \[], \n    'class_type': 'SAMModelLoader (segment anything)', \n    'outputs': \[\n        'sam_model'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 3
+  name GroundingDinoSAMSegmentsegmentanything
+  xpos 0
+  ypos 157
+  addUserKnob {20 Controls}
+  addUserKnob {1 prompt_ l prompt}
+  addUserKnob {7 threshold_ l threshold}
+  threshold_ 0.3
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'prompt_', \n        'threshold_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'sam_model'\n            ], \n            'name': 'sam_model'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'grounding_dino_model'\n            ], \n            'name': 'grounding_dino_model'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'image'\n        \}\n    ], \n    'class_type': 'GroundingDinoSAMSegment (segment anything)', \n    'outputs': \[\n        'image', \n        'mask'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name sam_model
+  }
+  Input {
+   inputs 0
+   name grounding_dino_model
+   number 1
+  }
+  Input {
+   inputs 0
+   name image
+   number 2
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  name ConvertMasktoImage
+  tile_color 0x73c47101
+  xpos 0
+  ypos 211
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'mask'\n            ], \n            'name': 'mask'\n        \}\n    ], \n    'class_type': 'MaskToImage', \n    'outputs': \[\n        'image'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name mask
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  name SaveImage
+  tile_color 0xbcb50001
+  xpos 0
+  ypos 321
+  addUserKnob {20 Controls}
+  addUserKnob {1 filename_prefix_ l filename_prefix t "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes."}
+  filename_prefix_ ComfyUI
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'filename_prefix_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'images'\n        \}\n    ], \n    'class_type': 'SaveImage', \n    'outputs': \[], \n    'output_node': true\n\}"}
+ }
+  Input {
+   inputs 0
+   name images
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  name QueuePrompt
+  tile_color 0x609e38ff
+  note_font "Bitstream Vera Sans"
+  xpos 0
+  ypos 352
+  addUserKnob {20 controls l Controls}
+  addUserKnob {22 comfyui_submit l submit T comfyui.queue_prompt.comfyui_submit() +STARTLINE}
+  addUserKnob {22 backup_result -STARTLINE T comfyui.read_media.save_image_backup()}
+  addUserKnob {20 about l About}
+  addUserKnob {26 _name l "" +STARTLINE T "<b>QueuePrompt</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+  addUserKnob {26 ""}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos 145
+   ypos 93
+  }
+  Output {
+   name Output
+   xpos 145
+   ypos 257
+  }
+ end_group
+ Output {
+  name Output1
+  xpos 0
+  ypos 424
+ }
+end_group
