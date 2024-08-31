@@ -1,0 +1,480 @@
+set cut_paste_input [stack 0]
+version 12.0 v8
+push $cut_paste_input
+Group {
+ name FLUX_img2img
+ onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
+ tile_color 0xa2b275ff
+ selected true
+ xpos 202
+ ypos -1
+ addUserKnob {20 controls l Controls}
+ addUserKnob {26 comfyui_gizmo l ComfyUIGizmo +INVISIBLE T "This knob only allows the read and backup to be outside the gizmo !"}
+ addUserKnob {41 text l description T ShowText.text}
+ addUserKnob {41 text_ l "extra prompt" T DeepTranslatorTextNode.text_}
+ addUserKnob {41 steps_ l steps T BasicScheduler.steps_}
+ addUserKnob {41 denoise_ l denoise T BasicScheduler.denoise_}
+ addUserKnob {41 guidance_ l guidance T FluxGuidance.guidance_}
+ addUserKnob {41 noise_seed_ l noise_seed T RandomNoise.noise_seed_}
+ addUserKnob {41 randomize -STARTLINE T RandomNoise.randomize}
+ addUserKnob {26 ""}
+ addUserKnob {41 comfyui_submit l submit -STARTLINE T QueuePrompt.comfyui_submit}
+ addUserKnob {41 backup_result -STARTLINE T QueuePrompt.backup_result}
+}
+ BackdropNode {
+  inputs 0
+  name PROMPT_BD
+  tile_color 0x2b7f6a01
+  label "<font face=\"Bitstream Vera Sans\" size=4>PROMPT</font>"
+  note_font_size 20
+  xpos -683
+  ypos -729
+  bdwidth 337
+  bdheight 491
+  addUserKnob {20 "Setup Tools" +INVISIBLE}
+  addUserKnob {1 data l Data}
+  data "\{\"color_code\": \"c2\"\}"
+ }
+ Group {
+  inputs 0
+  name LoadVAE
+  tile_color 0x335c7a01
+  xpos -199
+  ypos 94
+  addUserKnob {20 Controls}
+  addUserKnob {4 vae_name_ l vae_name M {ae.safetensors vae-ft-mse-840000-ema-pruned.safetensors}}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'vae_name_'\n    ], \n    'inputs': \[], \n    'class_type': 'VAELoader', \n    'outputs': \[\n        'vae'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+set Nb229bd0 [stack 0]
+push $Nb229bd0
+ Dot {
+  name Dot1
+  xpos -306
+  ypos -99
+  hide_input true
+ }
+ Input {
+  inputs 0
+  name Image
+  xpos -467
+  ypos -629
+ }
+set N5b971c0 [stack 0]
+ Dot {
+  name Dot2
+  xpos -171
+  ypos -156
+  hide_input true
+ }
+ Group {
+  inputs 2
+  name VAEEncode
+  tile_color 0xf7903101
+  xpos -205
+  ypos -102
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'pixels'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'vae'\n            ], \n            'name': 'vae'\n        \}\n    ], \n    'class_type': 'VAEEncode', \n    'outputs': \[\n        'latent'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name pixels
+  }
+  Input {
+   inputs 0
+   name vae
+   number 1
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 0
+  name LoadDiffusionModel
+  tile_color 0x335c7a01
+  xpos 239
+  ypos -133
+  addUserKnob {20 Controls}
+  addUserKnob {4 unet_name_ l unet_name M {flux1-dev.safetensors}}
+  addUserKnob {4 weight_dtype_ l weight_dtype M {default fp8_e4m3fn fp8_e5m2}}
+  weight_dtype_ fp8_e4m3fn
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'unet_name_', \n        'weight_dtype_'\n    ], \n    'inputs': \[], \n    'class_type': 'UNETLoader', \n    'outputs': \[\n        'model'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+set Nc3531d0 [stack 0]
+ Group {
+  name BasicScheduler
+  xpos 239
+  ypos -93
+  addUserKnob {20 Controls}
+  addUserKnob {4 scheduler_ l scheduler M {normal karras exponential sgm_uniform simple ddim_uniform beta}}
+  addUserKnob {3 steps_ l steps}
+  steps_ 30
+  addUserKnob {7 denoise_ l denoise}
+  denoise_ 0.75
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'scheduler_', \n        'steps_', \n        'denoise_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'model'\n            ], \n            'name': 'model'\n        \}\n    ], \n    'class_type': 'BasicScheduler', \n    'outputs': \[\n        'sigmas'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name model
+  }
+  Output {
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 0
+  name KSamplerSelect
+  xpos -231
+  ypos -18
+  addUserKnob {20 Controls}
+  addUserKnob {4 sampler_name_ l sampler_name M {euler euler_cfg_pp euler_ancestral euler_ancestral_cfg_pp heun heunpp2 dpm_2 dpm_2_ancestral lms dpm_fast dpm_adaptive dpmpp_2s_ancestral dpmpp_sde dpmpp_sde_gpu dpmpp_2m dpmpp_2m_sde dpmpp_2m_sde_gpu dpmpp_3m_sde dpmpp_3m_sde_gpu ddpm lcm ipndm ipndm_v deis ddim uni_pc uni_pc_bh2}}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'sampler_name_'\n    ], \n    'inputs': \[], \n    'class_type': 'KSamplerSelect', \n    'outputs': \[\n        'sampler'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 0
+  name DualCLIPLoader
+  tile_color 0x335c7a01
+  xpos -28
+  ypos -388
+  addUserKnob {20 Controls}
+  addUserKnob {4 clip_name1_ l clip_name1 M {clip_l.safetensors t5xxl_fp16.safetensors}}
+  addUserKnob {4 clip_name2_ l clip_name2 M {clip_l.safetensors t5xxl_fp16.safetensors}}
+  clip_name2_ t5xxl_fp16.safetensors
+  addUserKnob {4 type_ l type M {sdxl sd3 flux}}
+  type_ flux
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'clip_name1_', \n        'clip_name2_', \n        'type_'\n    ], \n    'inputs': \[], \n    'class_type': 'DualCLIPLoader', \n    'outputs': \[\n        'clip'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+push $N5b971c0
+ Group {
+  inputs 0
+  name LoadFlorence2Model
+  xpos -638
+  ypos -514
+  addUserKnob {20 Controls}
+  addUserKnob {4 version_ l version M {base base-ft large large-ft}}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'version_'\n    ], \n    'inputs': \[], \n    'class_type': 'LoadFlorence2Model', \n    'outputs': \[\n        'florence2'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 2
+  name Florence2
+  xpos -467
+  ypos -514
+  addUserKnob {20 Controls}
+  addUserKnob {4 task_ l task M {caption "detailed caption" "more detailed caption" "object detection" "dense region caption" "region proposal" "caption to phrase grounding" "referring expression segmentation" "region to segmentation" "open vocabulary detection" "region to category" "region to description" OCR "OCR with region"}}
+  task_ "more detailed caption"
+  addUserKnob {1 text_input_ l text_input}
+  addUserKnob {3 max_new_tokens_ l max_new_tokens}
+  max_new_tokens_ 1024
+  addUserKnob {3 num_beams_ l num_beams}
+  num_beams_ 3
+  addUserKnob {6 do_sample_ l do_sample +STARTLINE}
+  addUserKnob {6 fill_mask_ l fill_mask +STARTLINE}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'task_', \n        'text_input_', \n        'max_new_tokens_', \n        'num_beams_', \n        'do_sample_', \n        'fill_mask_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'florence2'\n            ], \n            'name': 'FLORENCE2'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'image'\n        \}\n    ], \n    'class_type': 'Florence2', \n    'outputs': \[\n        'image', \n        'string', \n        'f_bboxes'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name FLORENCE2
+  }
+  Input {
+   inputs 0
+   name image
+   number 1
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 0
+  name DeepTranslatorTextNode
+  xpos -631
+  ypos -435
+  addUserKnob {20 Controls}
+  addUserKnob {4 from_translate_ l from_translate M {auto afrikaans albanian amharic arabic armenian assamese aymara azerbaijani bambara basque belarusian bengali bhojpuri bosnian bulgarian catalan cebuano chichewa "chinese (simplified)" "chinese (traditional)" corsican croatian czech danish dhivehi dogri dutch english esperanto estonian ewe filipino finnish french frisian galician georgian german greek guarani gujarati "haitian creole" hausa hawaiian hebrew hindi hmong hungarian icelandic igbo ilocano indonesian irish italian japanese javanese kannada kazakh khmer kinyarwanda konkani korean krio "kurdish (kurmanji)" "kurdish (sorani)" kyrgyz lao latin latvian lingala lithuanian luganda luxembourgish macedonian maithili malagasy malay malayalam maltese maori marathi "meiteilon (manipuri)" mizo mongolian myanmar nepali norwegian "odia (oriya)" oromo pashto persian polish portuguese punjabi quechua romanian russian samoan sanskrit "scots gaelic" sepedi serbian sesotho shona sindhi sinhala slovak slovenian somali spanish sundanese swahili swedish tajik tamil tatar telugu thai tigrinya tsonga turkish turkmen twi ukrainian urdu uyghur uzbek vietnamese welsh xhosa yiddish yoruba zulu}}
+  addUserKnob {4 to_translate_ l to_translate M {afrikaans albanian amharic arabic armenian assamese aymara azerbaijani bambara basque belarusian bengali bhojpuri bosnian bulgarian catalan cebuano chichewa "chinese (simplified)" "chinese (traditional)" corsican croatian czech danish dhivehi dogri dutch english esperanto estonian ewe filipino finnish french frisian galician georgian german greek guarani gujarati "haitian creole" hausa hawaiian hebrew hindi hmong hungarian icelandic igbo ilocano indonesian irish italian japanese javanese kannada kazakh khmer kinyarwanda konkani korean krio "kurdish (kurmanji)" "kurdish (sorani)" kyrgyz lao latin latvian lingala lithuanian luganda luxembourgish macedonian maithili malagasy malay malayalam maltese maori marathi "meiteilon (manipuri)" mizo mongolian myanmar nepali norwegian "odia (oriya)" oromo pashto persian polish portuguese punjabi quechua romanian russian samoan sanskrit "scots gaelic" sepedi serbian sesotho shona sindhi sinhala slovak slovenian somali spanish sundanese swahili swedish tajik tamil tatar telugu thai tigrinya tsonga turkish turkmen twi ukrainian urdu uyghur uzbek vietnamese welsh xhosa yiddish yoruba zulu}}
+  to_translate_ english
+  addUserKnob {6 add_proxies_ l add_proxies +STARTLINE}
+  addUserKnob {43 proxies_ l proxies t "Proxies list (http=proxy), example:\nhttps=34.195.196.27:8080\nhttp=34.195.196.27:8080"}
+  addUserKnob {43 auth_data_ l auth_data t "Authorization data...\nExample:\napi_key=your_api_key\ndetect_lang_api_key=your_api_key\nclient_id=your_client_id\nsecret_key=your_secret_key\nappid=your-appid\nappkey=your-appkey"}
+  addUserKnob {4 service_ l service M {"GoogleTranslator \[free]" "MyMemoryTranslator \[free]" "LingueeTranslator \[free - word(s) only]" "PonsTranslator \[free - word(s) only]" "LibreTranslator \[free or api_key]" "QcriTranslator \[free or api_key]"}}
+  addUserKnob {43 text_ l text t "Input text"}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'from_translate_', \n        'to_translate_', \n        'add_proxies_', \n        'proxies_', \n        'auth_data_', \n        'service_', \n        'text_'\n    ], \n    'inputs': \[], \n    'class_type': 'DeepTranslatorTextNode', \n    'outputs': \[\n        'string'\n    ], \n    'output_node': true\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 2
+  name GriptapeCombineMergeTexts
+  xpos -467
+  ypos -430
+  addUserKnob {20 Controls}
+  addUserKnob {1 merge_string_ l merge_string}
+  merge_string_ " "
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'merge_string_'\n    ], \n    'inputs': \[\n        \{\n            'opt': true, \n            'outputs': \[\n                'string'\n            ], \n            'name': 'input_1'\n        \}, \n        \{\n            'opt': true, \n            'outputs': \[\n                'string'\n            ], \n            'name': 'input_2'\n        \}\n    ], \n    'class_type': 'Griptape Combine: Merge Texts', \n    'outputs': \[\n        'string'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name input_1
+  }
+  Input {
+   inputs 0
+   name input_2
+   number 1
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  name ShowText
+  onCreate "nuke.thisNode().knob(\"text\").setFlag(nuke.READ_ONLY)"
+  xpos -467
+  ypos -304
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'string'\n            ], \n            'name': 'text'\n        \}\n    ], \n    'class_type': 'ShowText|pysssss', \n    'outputs': \[\n        'string'\n    ], \n    'output_node': true\n\}"}
+  addUserKnob {43 text l "" +STARTLINE}
+ }
+  Input {
+   inputs 0
+   name text
+  }
+  Output {
+   name Output1
+   selected true
+  }
+ end_group
+ Group {
+  inputs 2
+  name GriptapeConvertTexttoCLIPEncode
+  xpos -28
+  ypos -304
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'string'\n            ], \n            'name': 'STRING'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'clip'\n            ], \n            'name': 'clip'\n        \}\n    ], \n    'class_type': 'Griptape Convert: Text to CLIP Encode', \n    'outputs': \[\n        'conditioning'\n    ], \n    'output_node': true\n\}"}
+ }
+  Input {
+   inputs 0
+   name STRING
+  }
+  Input {
+   inputs 0
+   name clip
+   number 1
+  }
+  Output {
+   name Output1
+  }
+ end_group
+ Group {
+  name FluxGuidance
+  xpos -28
+  ypos -225
+  addUserKnob {20 Controls}
+  addUserKnob {7 guidance_ l guidance R 0 100}
+  guidance_ 3.5
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'guidance_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'conditioning'\n            ], \n            'name': 'conditioning'\n        \}\n    ], \n    'class_type': 'FluxGuidance', \n    'outputs': \[\n        'conditioning'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name conditioning
+  }
+  Output {
+   name Output1
+  }
+ end_group
+push $Nc3531d0
+ Group {
+  inputs 2
+  name BasicGuider
+  xpos -28
+  ypos -133
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'model'\n            ], \n            'name': 'model'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'conditioning'\n            ], \n            'name': 'conditioning'\n        \}\n    ], \n    'class_type': 'BasicGuider', \n    'outputs': \[\n        'guider'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name model
+  }
+  Input {
+   inputs 0
+   name conditioning
+   number 1
+  }
+  Output {
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 0
+  name RandomNoise
+  xpos 228
+  ypos -18
+  addUserKnob {20 Controls}
+  addUserKnob {3 noise_seed_ l noise_seed}
+  addUserKnob {6 randomize t "Allows the linked QueuePrompt to automatically change the seed by randomizing the number." -STARTLINE}
+  randomize true
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'noise_seed_'\n    ], \n    'inputs': \[], \n    'class_type': 'RandomNoise', \n    'outputs': \[\n        'noise'\n    ], \n    'output_node': false\n\}"}
+ }
+  Output {
+   inputs 0
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 5
+  name SamplerCustomAdvanced
+  xpos -28
+  ypos -18
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'noise'\n            ], \n            'name': 'noise'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'guider'\n            ], \n            'name': 'guider'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'sampler'\n            ], \n            'name': 'sampler'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'sigmas'\n            ], \n            'name': 'sigmas'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'latent'\n            ], \n            'name': 'latent_image'\n        \}\n    ], \n    'class_type': 'SamplerCustomAdvanced', \n    'outputs': \[\n        'latent', \n        'latent'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name noise
+  }
+  Input {
+   inputs 0
+   name guider
+   number 1
+  }
+  Input {
+   inputs 0
+   name sampler
+   number 2
+  }
+  Input {
+   inputs 0
+   name sigmas
+   number 3
+  }
+  Input {
+   inputs 0
+   name latent_image
+   number 4
+  }
+  Output {
+   name Output1
+  }
+ end_group
+ Group {
+  inputs 2
+  name VAEDecode
+  tile_color 0xf7903101
+  xpos -28
+  ypos 94
+  addUserKnob {20 Controls}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'latent'\n            ], \n            'name': 'samples'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'vae'\n            ], \n            'name': 'vae'\n        \}\n    ], \n    'class_type': 'VAEDecode', \n    'outputs': \[\n        'image'\n    ], \n    'output_node': false\n\}"}
+ }
+  Input {
+   inputs 0
+   name samples
+  }
+  Input {
+   inputs 0
+   name vae
+   number 1
+  }
+  Output {
+   name Output1
+  }
+ end_group
+ Group {
+  name SaveEXR
+  tile_color 0xbcb50001
+  xpos -28
+  ypos 317
+  addUserKnob {20 Controls}
+  addUserKnob {1 filename_prefix_ l filename_prefix}
+  filename_prefix_ 35891/image
+  addUserKnob {6 sRGB_to_linear_ l sRGB_to_linear +STARTLINE}
+  sRGB_to_linear_ true
+  addUserKnob {3 version_ l version}
+  version_ 1
+  addUserKnob {3 start_frame_ l start_frame}
+  start_frame_ 1001
+  addUserKnob {3 frame_pad_ l frame_pad}
+  frame_pad_ 4
+  addUserKnob {4 save_workflow_ l save_workflow M {ui api "ui + api" none}}
+  addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'filename_prefix_', \n        'sRGB_to_linear_', \n        'version_', \n        'start_frame_', \n        'frame_pad_', \n        'save_workflow_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'images'\n        \}\n    ], \n    'class_type': 'SaveEXR', \n    'outputs': \[], \n    'output_node': true\n\}"}
+ }
+  Input {
+   inputs 0
+   name images
+   xpos 400
+   ypos -9
+  }
+  Output {
+   name Output1
+   xpos 400
+   ypos 15
+  }
+ end_group
+ Group {
+  name QueuePrompt
+  tile_color 0x609e38ff
+  note_font "Bitstream Vera Sans"
+  xpos -28
+  ypos 341
+  addUserKnob {20 controls l Controls}
+  addUserKnob {22 comfyui_submit l submit T comfyui.queue_prompt.comfyui_submit() +STARTLINE}
+  addUserKnob {22 backup_result -STARTLINE T comfyui.read_media.save_image_backup()}
+  addUserKnob {20 about l About}
+  addUserKnob {26 _name l "" +STARTLINE T "<b>QueuePrompt</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+  addUserKnob {26 ""}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos 145
+   ypos 93
+  }
+  Output {
+   name Output
+   xpos 145
+   ypos 257
+  }
+ end_group
+ Output {
+  name Output1
+  xpos -28
+  ypos 413
+ }
+ StickyNote {
+  inputs 0
+  name ShowTextOutput
+  label "\[value ShowText.name]"
+  xpos -641
+  ypos -304
+ }
+end_group
