@@ -119,7 +119,7 @@ set Nc3531d0 [stack 0]
   addUserKnob {20 Controls}
   addUserKnob {4 scheduler_ l scheduler M {normal karras exponential sgm_uniform simple ddim_uniform beta}}
   addUserKnob {3 steps_ l steps}
-  steps_ 30
+  steps_ 20
   addUserKnob {7 denoise_ l denoise}
   denoise_ 0.75
   addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'scheduler_', \n        'steps_', \n        'denoise_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'model'\n            ], \n            'name': 'model'\n        \}\n    ], \n    'class_type': 'BasicScheduler', \n    'outputs': \[\n        'sigmas'\n    ], \n    'output_node': false\n\}"}
