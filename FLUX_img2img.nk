@@ -236,6 +236,7 @@ push $N5b971c0
  Group {
   inputs 2
   name GriptapeCombineMergeTexts
+  tile_color 0x4a5ec401
   xpos -467
   ypos -430
   addUserKnob {20 Controls}
@@ -416,7 +417,7 @@ push $Nc3531d0
   ypos 317
   addUserKnob {20 Controls}
   addUserKnob {1 filename_prefix_ l filename_prefix}
-  filename_prefix_ 35891/image
+  filename_prefix_ flux
   addUserKnob {6 sRGB_to_linear_ l sRGB_to_linear +STARTLINE}
   sRGB_to_linear_ true
   addUserKnob {3 version_ l version}

@@ -6,8 +6,8 @@ Group {
  onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
  tile_color 0xa2b275ff
  selected true
- xpos -2651
- ypos 57
+ xpos 19
+ ypos 36
  addUserKnob {20 controls l Controls}
  addUserKnob {26 comfyui_gizmo l ComfyUIGizmo +INVISIBLE T "This knob only allows the read and backup to be outside the gizmo !"}
  addUserKnob {41 text_ l prompt T DeepTranslatorTextNode.text_}
@@ -21,14 +21,14 @@ Group {
 }
  BackdropNode {
   inputs 0
-  name COMFYUI_NODES_BD
-  tile_color 0x467d9c01
-  label "<font face=\"Bitstream Vera Sans\" size=4>COMFYUI NODES</font>\n<font face=\"Bitstream Vera Sans\" size=1><i>Here put all the nodes needed for the comfyui gizmo</i></font>"
+  name PROMPT_BD
+  tile_color 0xac6e4d01
+  label "<font face=\"Bitstream Vera Sans\" size=4>PROMPT</font>"
   note_font_size 20
-  xpos -643
-  ypos -541
-  bdwidth 1108
-  bdheight 804
+  xpos -493
+  ypos -441
+  bdwidth 286
+  bdheight 186
   addUserKnob {20 "Setup Tools" +INVISIBLE}
   addUserKnob {1 data l Data}
   data "\{\"color_code\": \"c2\"\}"
@@ -107,7 +107,7 @@ Group {
    name Output1
   }
  end_group
-set Nc91b5b0 [stack 0]
+set Nc706cf0 [stack 0]
  Group {
   name BasicScheduler
   xpos 239
@@ -164,7 +164,7 @@ set Nc91b5b0 [stack 0]
  Group {
   inputs 0
   name DeepTranslatorTextNode
-  xpos -216
+  xpos -317
   ypos -353
   addUserKnob {20 Controls}
   addUserKnob {4 from_translate_ l from_translate M {auto afrikaans albanian amharic arabic armenian assamese aymara azerbaijani bambara basque belarusian bengali bhojpuri bosnian bulgarian catalan cebuano chichewa "chinese (simplified)" "chinese (traditional)" corsican croatian czech danish dhivehi dogri dutch english esperanto estonian ewe filipino finnish french frisian galician georgian german greek guarani gujarati "haitian creole" hausa hawaiian hebrew hindi hmong hungarian icelandic igbo ilocano indonesian irish italian japanese javanese kannada kazakh khmer kinyarwanda konkani korean krio "kurdish (kurmanji)" "kurdish (sorani)" kyrgyz lao latin latvian lingala lithuanian luganda luxembourgish macedonian maithili malagasy malay malayalam maltese maori marathi "meiteilon (manipuri)" mizo mongolian myanmar nepali norwegian "odia (oriya)" oromo pashto persian polish portuguese punjabi quechua romanian russian samoan sanskrit "scots gaelic" sepedi serbian sesotho shona sindhi sinhala slovak slovenian somali spanish sundanese swahili swedish tajik tamil tatar telugu thai tigrinya tsonga turkish turkmen twi ukrainian urdu uyghur uzbek vietnamese welsh xhosa yiddish yoruba zulu}}
@@ -185,7 +185,7 @@ set Nc91b5b0 [stack 0]
  Group {
   name ShowText
   onCreate "nuke.thisNode().knob(\"text\").setFlag(nuke.READ_ONLY)"
-  xpos -216
+  xpos -317
   ypos -304
   addUserKnob {20 Controls}
   addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'string'\n            ], \n            'name': 'text'\n        \}\n    ], \n    'class_type': 'ShowText|pysssss', \n    'outputs': \[\n        'string'\n    ], \n    'output_node': true\n\}"}
@@ -238,7 +238,7 @@ set Nc91b5b0 [stack 0]
    name Output1
   }
  end_group
-push $Nc91b5b0
+push $Nc706cf0
  Group {
   inputs 2
   name BasicGuider
@@ -342,7 +342,7 @@ push $Nc91b5b0
   ypos 317
   addUserKnob {20 Controls}
   addUserKnob {1 filename_prefix_ l filename_prefix}
-  filename_prefix_ 93771/image
+  filename_prefix_ image
   addUserKnob {6 sRGB_to_linear_ l sRGB_to_linear +STARTLINE}
   sRGB_to_linear_ true
   addUserKnob {3 version_ l version}
@@ -400,7 +400,8 @@ push $Nc91b5b0
   inputs 0
   name ShowTextOutput
   label "\[value ShowText.name]"
-  xpos -415
-  ypos -310
+  xpos -474
+  ypos -302
  }
 end_group
+

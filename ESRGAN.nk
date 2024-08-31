@@ -36,7 +36,7 @@ Group {
  }
  Group {
   inputs 0
-  name x3model
+  name x4model
   tile_color 0x335c7a01
   xpos 349
   ypos -161
@@ -109,7 +109,7 @@ Group {
   ypos 137
   addUserKnob {20 Controls}
   addUserKnob {1 filename_prefix_ l filename_prefix}
-  filename_prefix_ image
+  filename_prefix_ upscaled
   addUserKnob {6 sRGB_to_linear_ l sRGB_to_linear +STARTLINE}
   sRGB_to_linear_ true
   addUserKnob {3 version_ l version}

@@ -108,7 +108,7 @@ Group {
   ypos 321
   addUserKnob {20 Controls}
   addUserKnob {1 filename_prefix_ l filename_prefix t "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes."}
-  filename_prefix_ ComfyUI
+  filename_prefix_ matte
   addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'filename_prefix_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'images'\n        \}\n    ], \n    'class_type': 'SaveImage', \n    'outputs': \[], \n    'output_node': true\n\}"}
  }
   Input {
