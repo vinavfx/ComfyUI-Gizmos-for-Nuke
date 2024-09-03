@@ -1,0 +1,323 @@
+set cut_paste_input [stack 0]
+version 12.0 v8
+push $cut_paste_input
+Group {
+name LIVEPORTRAIT
+tile_color 0xa2b275ff
+xpos 1018
+ypos 384
+addUserKnob {20 controls l Controls}
+addUserKnob {26 comfyui_gizmo l ComfyUIGizmo +INVISIBLE T "This knob only allows the read and backup to be outside the gizmo !"}
+addUserKnob {4 auto_crop l "auto crop" M {"Media Pipe" "Face Alignment" "Insight Face" Disabled ""}}
+auto_crop Disabled
+addUserKnob {26 ""}
+addUserKnob {41 comfyui_submit l submit T QueuePrompt.comfyui_submit}
+addUserKnob {41 backup_result -STARTLINE T QueuePrompt.backup_result}
+}
+Input {
+inputs 0
+name driving
+xpos 372
+ypos -197
+number 1
+}
+set Nae9df20 [stack 0]
+push 0
+Input {
+inputs 0
+name src
+xpos 582
+ypos -433
+}
+set Ne9de9e0 [stack 0]
+Dot {
+name Dot2
+xpos 616
+ypos -7
+}
+set Ncc026f0 [stack 0]
+Group {
+inputs 3
+name AdvancedLivePortraitPHM
+xpos 372
+ypos -10
+addUserKnob {20 Controls}
+addUserKnob {7 retargeting_eyes_ l retargeting_eyes}
+addUserKnob {7 retargeting_mouth_ l retargeting_mouth}
+addUserKnob {7 crop_factor_ l crop_factor R 1.5 2.5}
+crop_factor_ 1.7
+addUserKnob {6 turn_on_ l turn_on +STARTLINE}
+turn_on_ true
+addUserKnob {6 tracking_src_vid_ l tracking_src_vid +STARTLINE}
+addUserKnob {6 animate_without_vid_ l animate_without_vid +STARTLINE}
+addUserKnob {43 command_ l command}
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'retargeting_eyes_', \n        'retargeting_mouth_', \n        'crop_factor_', \n        'turn_on_', \n        'tracking_src_vid_', \n        'animate_without_vid_', \n        'command_'\n    ], \n    'inputs': \[\n        \{\n            'opt': true, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'src_images'\n        \}, \n        \{\n            'opt': true, \n            'outputs': \[\n                'editor_link'\n            ], \n            'name': 'motion_link'\n        \}, \n        \{\n            'opt': true, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'driving_images'\n        \}\n    ], \n    'class_type': 'AdvancedLivePortrait', \n    'outputs': \[\n        'image'\n    ], \n    'output_node': true\n\}"}
+}
+Input {
+inputs 0
+name src_images
+}
+Input {
+inputs 0
+name motion_link
+number 1
+}
+Input {
+inputs 0
+name driving_images
+number 2
+}
+Output {
+name Output1
+}
+end_group
+push $Nae9df20
+push $Ne9de9e0
+Dot {
+name Dot1
+xpos 100
+ypos -430
+}
+set N1ca620c0 [stack 0]
+push $N1ca620c0
+Group {
+inputs 0
+name LivePortraitLoadInsightFaceCropper
+xpos -514
+ypos -295
+addUserKnob {20 Controls}
+addUserKnob {4 onnx_device_ l onnx_device M {CPU CUDA ROCM CoreML}}
+addUserKnob {6 keep_model_loaded_ l keep_model_loaded +STARTLINE}
+keep_model_loaded_ true
+addUserKnob {7 detection_threshold_ l detection_threshold R 0.05 1}
+detection_threshold_ 0.5
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'onnx_device_', \n        'keep_model_loaded_', \n        'detection_threshold_'\n    ], \n    'inputs': \[], \n    'class_type': 'LivePortraitLoadCropper', \n    'outputs': \[\n        'lpcropper'\n    ], \n    'output_node': false\n\}"}
+}
+Output {
+inputs 0
+name Output1
+}
+end_group
+Group {
+inputs 0
+name LivePortraitLoadFaceAlignmentCropper
+xpos -690
+ypos -314
+addUserKnob {20 Controls}
+addUserKnob {4 face_detector_ l face_detector M {blazeface blazeface_back_camera sfd}}
+face_detector_ blazeface_back_camera
+addUserKnob {4 landmarkrunner_device_ l landmarkrunner_device M {CPU CUDA ROCM CoreML torch_gpu}}
+landmarkrunner_device_ torch_gpu
+addUserKnob {4 face_detector_device_ l face_detector_device M {cuda cpu mps}}
+addUserKnob {4 face_detector_dtype_ l face_detector_dtype M {fp16 bf16 fp32}}
+addUserKnob {6 keep_model_loaded_ l keep_model_loaded +STARTLINE}
+keep_model_loaded_ true
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'face_detector_', \n        'landmarkrunner_device_', \n        'face_detector_device_', \n        'face_detector_dtype_', \n        'keep_model_loaded_'\n    ], \n    'inputs': \[], \n    'class_type': 'LivePortraitLoadFaceAlignmentCropper', \n    'outputs': \[\n        'lpcropper'\n    ], \n    'output_node': false\n\}"}
+}
+Output {
+inputs 0
+name Output1
+}
+end_group
+Group {
+inputs 0
+name LivePortraitLoadMediaPipeCropper
+xpos -893
+ypos -276
+addUserKnob {20 Controls}
+addUserKnob {4 landmarkrunner_onnx_device_ l landmarkrunner_onnx_device M {CPU CUDA ROCM CoreML torch_gpu}}
+landmarkrunner_onnx_device_ CUDA
+addUserKnob {6 keep_model_loaded_ l keep_model_loaded +STARTLINE}
+keep_model_loaded_ true
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'landmarkrunner_onnx_device_', \n        'keep_model_loaded_'\n    ], \n    'inputs': \[], \n    'class_type': 'LivePortraitLoadMediaPipeCropper', \n    'outputs': \[\n        'lpcropper'\n    ], \n    'output_node': false\n\}"}
+}
+Output {
+inputs 0
+name Output1
+}
+end_group
+Switch {
+inputs 3
+which {{parent.auto_crop}}
+name SwitchAny
+tile_color 0x7f7f7fff
+xpos -690
+ypos -197
+addUserKnob {20 User +INVISIBLE}
+addUserKnob {26 switch_any}
+}
+Group {
+inputs 0
+name DownLoadLivePortraitModels
+xpos -300
+ypos -395
+addUserKnob {20 Controls}
+addUserKnob {4 precision_ l precision M {fp16 fp32 auto}}
+precision_ auto
+addUserKnob {4 mode_ l mode M {human animal}}
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'precision_', \n        'mode_'\n    ], \n    'inputs': \[], \n    'class_type': 'DownloadAndLoadLivePortraitModels', \n    'outputs': \[\n        'liveportraitpipe'\n    ], \n    'output_node': false\n\}"}
+}
+Output {
+inputs 0
+name Output1
+}
+end_group
+set N1cb0c460 [stack 0]
+Group {
+inputs 3
+name LivePortraitCropper
+xpos -300
+ypos -197
+addUserKnob {20 Controls}
+addUserKnob {3 dsize_ l dsize}
+dsize_ 512
+addUserKnob {7 scale_ l scale R 1 4}
+scale_ 2.3
+addUserKnob {7 vx_ratio_ l vx_ratio R -1 1}
+addUserKnob {7 vy_ratio_ l vy_ratio R -1 1}
+vy_ratio_ -0.125
+addUserKnob {3 face_index_ l face_index}
+addUserKnob {4 face_index_order_ l face_index_order M {large-small left-right right-left top-bottom bottom-top small-large distance-from-retarget-face}}
+addUserKnob {6 rotate_ l rotate +STARTLINE}
+rotate_ true
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'dsize_', \n        'scale_', \n        'vx_ratio_', \n        'vy_ratio_', \n        'face_index_', \n        'face_index_order_', \n        'rotate_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'liveportraitpipe'\n            ], \n            'name': 'pipeline'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'lpcropper'\n            ], \n            'name': 'cropper'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'source_image'\n        \}\n    ], \n    'class_type': 'LivePortraitCropper', \n    'outputs': \[\n        'image', \n        'cropinfo'\n    ], \n    'output_node': false\n\}"}
+}
+Input {
+inputs 0
+name pipeline
+}
+Input {
+inputs 0
+name cropper
+number 1
+}
+Input {
+inputs 0
+name source_image
+number 2
+}
+Output {
+name Output1
+}
+end_group
+push $N1cb0c460
+Group {
+inputs 4
+name LivePortraitProcess
+xpos 66
+ypos -197
+addUserKnob {20 Controls}
+addUserKnob {6 lip_zero_ l lip_zero +STARTLINE}
+addUserKnob {7 lip_zero_threshold_ l lip_zero_threshold R 0.001 4}
+lip_zero_threshold_ 0.03
+addUserKnob {6 stitching_ l stitching +STARTLINE}
+stitching_ true
+addUserKnob {7 delta_multiplier_ l delta_multiplier R -100 100}
+delta_multiplier_ 1
+addUserKnob {4 mismatch_method_ l mismatch_method M {constant cycle mirror cut}}
+addUserKnob {4 relative_motion_mode_ l relative_motion_mode M {relative source_video_smoothed relative_rotation_only single_frame off}}
+addUserKnob {7 driving_smooth_observation_variance_ l driving_smooth_observation_variance R 1e-11 0.01}
+driving_smooth_observation_variance_ 3e-06
+addUserKnob {6 expression_friendly_ l expression_friendly +STARTLINE}
+addUserKnob {7 expression_friendly_multiplier_ l expression_friendly_multiplier R 0.01 100}
+expression_friendly_multiplier_ 1
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'lip_zero_', \n        'lip_zero_threshold_', \n        'stitching_', \n        'delta_multiplier_', \n        'mismatch_method_', \n        'relative_motion_mode_', \n        'driving_smooth_observation_variance_', \n        'expression_friendly_', \n        'expression_friendly_multiplier_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'liveportraitpipe'\n            ], \n            'name': 'pipeline'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'cropinfo'\n            ], \n            'name': 'crop_info'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'source_image'\n        \}, \n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'driving_images'\n        \}, \n        \{\n            'opt': true, \n            'outputs': \[\n                'retargetinginfo'\n            ], \n            'name': 'opt_retargeting_info'\n        \}\n    ], \n    'class_type': 'LivePortraitProcess', \n    'outputs': \[\n        'image', \n        'lp_out'\n    ], \n    'output_node': false\n\}"}
+}
+Input {
+inputs 0
+name pipeline
+}
+Input {
+inputs 0
+name crop_info
+number 1
+}
+Input {
+inputs 0
+name source_image
+number 2
+}
+Input {
+inputs 0
+name driving_images
+number 3
+}
+Input {
+inputs 0
+name opt_retargeting_info
+number 4
+}
+Output {
+name Output1
+}
+end_group
+Switch {
+inputs 2
+which {{"parent.auto_crop == 3"}}
+name SwitchAny1
+tile_color 0x7f7f7fff
+xpos 66
+ypos -10
+addUserKnob {20 User +INVISIBLE}
+addUserKnob {26 switch_any}
+}
+Group {
+name SaveEXR
+tile_color 0xbcb50001
+xpos 66
+ypos 219
+addUserKnob {20 Controls}
+addUserKnob {1 filename_prefix_ l filename_prefix}
+filename_prefix_ liveportrait
+addUserKnob {6 sRGB_to_linear_ l sRGB_to_linear +STARTLINE}
+sRGB_to_linear_ true
+addUserKnob {3 version_ l version}
+version_ 1
+addUserKnob {3 start_frame_ l start_frame}
+start_frame_ 1001
+addUserKnob {3 frame_pad_ l frame_pad}
+frame_pad_ 4
+addUserKnob {4 save_workflow_ l save_workflow M {ui api "ui + api" none}}
+addUserKnob {22 data -STARTLINE +HIDDEN T "\{\n    'knobs_order': \[\n        'filename_prefix_', \n        'sRGB_to_linear_', \n        'version_', \n        'start_frame_', \n        'frame_pad_', \n        'save_workflow_'\n    ], \n    'inputs': \[\n        \{\n            'opt': false, \n            'outputs': \[\n                'image'\n            ], \n            'name': 'images'\n        \}\n    ], \n    'class_type': 'SaveEXR', \n    'outputs': \[], \n    'output_node': true\n\}"}
+}
+Input {
+inputs 0
+name images
+xpos 400
+ypos -9
+}
+Output {
+name Output1
+xpos 400
+ypos 15
+}
+end_group
+Group {
+name QueuePrompt
+tile_color 0x609e38ff
+note_font "Bitstream Vera Sans"
+xpos 66
+ypos 243
+addUserKnob {20 controls l Controls}
+addUserKnob {22 comfyui_submit l submit T comfyui.queue_prompt.comfyui_submit() +STARTLINE}
+addUserKnob {22 backup_result -STARTLINE T comfyui.read_media.save_image_backup()}
+}
+Input {
+inputs 0
+name Input
+xpos 145
+ypos 93
+}
+Output {
+name Output
+xpos 145
+ypos 257
+}
+end_group
+push $Ncc026f0
+Output {
+name Output1
+xpos 582
+ypos 178
+}
+end_group
