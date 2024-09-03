@@ -4,8 +4,9 @@ push $cut_paste_input
 Group {
 name LIVEPORTRAIT
 tile_color 0xa2b275ff
-xpos 1018
-ypos 384
+selected true
+xpos 976
+ypos 548
 addUserKnob {20 controls l Controls}
 addUserKnob {26 comfyui_gizmo l ComfyUIGizmo +INVISIBLE T "This knob only allows the read and backup to be outside the gizmo !"}
 addUserKnob {4 auto_crop l "auto crop" M {"Media Pipe" "Face Alignment" "Insight Face" Disabled ""}}
@@ -14,6 +15,20 @@ addUserKnob {26 ""}
 addUserKnob {41 comfyui_submit l submit T QueuePrompt.comfyui_submit}
 addUserKnob {41 backup_result -STARTLINE T QueuePrompt.backup_result}
 }
+BackdropNode {
+inputs 0
+name AUTO_CROP_BD
+tile_color 0x275b8201
+label "<font face=\"Bitstream Vera Sans\" size=4>AUTO CROP</font>"
+note_font_size 20
+xpos -954
+ypos -389
+bdwidth 799
+bdheight 255
+addUserKnob {20 "Setup Tools" +INVISIBLE}
+addUserKnob {1 data l Data}
+data "\{\"color_code\": \"c1\"\}"
+}
 Input {
 inputs 0
 name driving
@@ -21,7 +36,7 @@ xpos 372
 ypos -197
 number 1
 }
-set Nae9df20 [stack 0]
+set N1dcc1f80 [stack 0]
 push 0
 Input {
 inputs 0
@@ -29,13 +44,13 @@ name src
 xpos 582
 ypos -433
 }
-set Ne9de9e0 [stack 0]
+set N1cab6900 [stack 0]
 Dot {
 name Dot2
 xpos 616
 ypos -7
 }
-set Ncc026f0 [stack 0]
+set Nd0bc1b0 [stack 0]
 Group {
 inputs 3
 name AdvancedLivePortraitPHM
@@ -71,15 +86,15 @@ Output {
 name Output1
 }
 end_group
-push $Nae9df20
-push $Ne9de9e0
+push $N1dcc1f80
+push $N1cab6900
 Dot {
 name Dot1
 xpos 100
 ypos -430
 }
-set N1ca620c0 [stack 0]
-push $N1ca620c0
+set N1cb2ac20 [stack 0]
+push $N1cb2ac20
 Group {
 inputs 0
 name LivePortraitLoadInsightFaceCropper
@@ -150,7 +165,7 @@ Group {
 inputs 0
 name DownLoadLivePortraitModels
 xpos -300
-ypos -395
+ypos -493
 addUserKnob {20 Controls}
 addUserKnob {4 precision_ l precision M {fp16 fp32 auto}}
 precision_ auto
@@ -162,7 +177,7 @@ inputs 0
 name Output1
 }
 end_group
-set N1cb0c460 [stack 0]
+set Ne7e5ba0 [stack 0]
 Group {
 inputs 3
 name LivePortraitCropper
@@ -200,7 +215,7 @@ Output {
 name Output1
 }
 end_group
-push $N1cb0c460
+push $Ne7e5ba0
 Group {
 inputs 4
 name LivePortraitProcess
@@ -314,10 +329,11 @@ xpos 145
 ypos 257
 }
 end_group
-push $Ncc026f0
+push $Nd0bc1b0
 Output {
 name Output1
 xpos 582
 ypos 178
 }
 end_group
+
