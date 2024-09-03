@@ -1,7 +1,7 @@
 # ComfyUI Gizmos for Nuke:
 #### Pre-assembled gizmos for ComfyUI within Nuke
 
-1. Require [nuke_comfyui](https://github.com/vinavfx/nuke_comfyui) to use them.
+1. Require [ComfyUI-for-Nuke](https://github.com/vinavfx/nuke_comfyui) to use them.
 
 <i>If you don't have some node included in the gizmo, install the Plugin in ComfyUI 
 when you get the message that the node or model does not exist !</i>
