@@ -16,3 +16,7 @@ git clone https://github.com/vinavfx/ComfyUI-Gizmos-for-Nuke Gizmos
 cd C:\Users\<username>\.nuke\nuke_comfyui\nodes
 git clone https://github.com/vinavfx/ComfyUI-Gizmos-for-Nuke Gizmos
 ```
+
+<div style="display: flex;">
+  <img src="screenshot.png"/>
+</div>
