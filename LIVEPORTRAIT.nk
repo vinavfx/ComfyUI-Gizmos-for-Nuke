@@ -314,7 +314,7 @@ note_font "Bitstream Vera Sans"
 xpos 66
 ypos 243
 addUserKnob {20 controls l Controls}
-addUserKnob {22 comfyui_submit l submit T comfyui.queue_prompt.comfyui_submit() +STARTLINE}
+addUserKnob {22 comfyui_submit l submit T comfyui.queue_prompt.submit() +STARTLINE}
 addUserKnob {22 backup_result -STARTLINE T comfyui.read_media.save_image_backup()}
 }
 Input {
